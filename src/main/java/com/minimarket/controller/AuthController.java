@@ -32,7 +32,7 @@ public class AuthController {
     public ResponseEntity<?> createToken(@Valid @RequestBody AuthRequest request) {
 
         // JUGADA DE DEBUGGING
-        System.out.println("🔥 EL HASH CORRECTO ES: " + new org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder().encode("12345"));
+        System.out.println("EL HASH CORRECTO ES: " + new org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder().encode("12345"));
         // ---------------------------
 
         try {
