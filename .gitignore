@@ -1,0 +1,10 @@
+# compilados
+target/
+
+# secretos locales (no subir)
+.env
+
+# IDE / herramientas
+.idea/
+*.iml
+.omc/
