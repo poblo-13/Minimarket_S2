@@ -3,6 +3,7 @@ package com.minimarket.security.util;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -12,12 +13,17 @@ import java.util.Set;
 @Component
 public class JwtUtil {
 
-    // 1 la clave secreta debe ser larga y segura
-    private static final String SECRET = "MinimarketPlus_ClaveSecretaSuperSegura_2026_Java17_Token";
-    private final SecretKey secretKey = Keys.hmacShaKeyFor(SECRET.getBytes());
+    // 1 la clave secreta ahora viene del .env, ya no quemada en el codigo
+    private final SecretKey secretKey;
 
-    // 2 tiempo de validez del Token (1 hora en milisegundos)
-    private static final long EXPIRATION_TIME = 3600000;
+    // 2 tiempo de validez del Token (en milisegundos), tambien desde el .env
+    private final long expirationTime;
+
+    public JwtUtil(@Value("${jwt.secret}") String secret,
+                   @Value("${jwt.expiration}") long expirationTime) {
+        this.secretKey = Keys.hmacShaKeyFor(secret.getBytes());
+        this.expirationTime = expirationTime;
+    }
 
     // metodo para fabricar el token
     public String generateToken(String username, Set<String> roles) {
@@ -25,7 +31,7 @@ public class JwtUtil {
                 .subject(username) // a quien le pertenece el token
                 .claim("roles", roles) // agregamos los roles al pase VIP
                 .issuedAt(new Date()) // fecha de creacion
-                .expiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME)) // fecha de vencimiento
+                .expiration(new Date(System.currentTimeMillis() + expirationTime)) // fecha de vencimiento
                 .signWith(secretKey) // lo firmamos con nuestra clave secreta para que no se pueda falsificar
                 .compact(); // lo convertimos en un String (token final)
     }

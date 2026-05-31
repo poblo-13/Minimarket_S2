@@ -4,6 +4,7 @@ import com.minimarket.entity.Inventario;
 import com.minimarket.service.InventarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,11 +27,13 @@ public class InventarioController {
         return (inventario != null) ? ResponseEntity.ok(inventario) : ResponseEntity.notFound().build();
     }
 
+    @PreAuthorize("hasAuthority('GERENTE')")
     @PostMapping
     public Inventario registrarMovimiento(@RequestBody Inventario inventario) {
         return inventarioService.save(inventario);
     }
 
+    @PreAuthorize("hasAuthority('GERENTE')")
     @PutMapping("/{id}")
     public ResponseEntity<Inventario> actualizarMovimiento(@PathVariable Long id, @RequestBody Inventario inventario) {
         Inventario existente = inventarioService.findById(id);
@@ -41,6 +44,7 @@ public class InventarioController {
         return ResponseEntity.notFound().build();
     }
 
+    @PreAuthorize("hasAuthority('GERENTE')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminarMovimiento(@PathVariable Long id) {
         Inventario inventario = inventarioService.findById(id);

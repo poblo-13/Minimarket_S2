@@ -4,6 +4,7 @@ import com.minimarket.dto.AuthRequest;
 import com.minimarket.dto.AuthResponse;
 import com.minimarket.security.util.JwtUtil;
 import com.minimarket.security.service.CustomUserDetailsService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -28,10 +29,10 @@ public class AuthController {
     private JwtUtil jwtUtil;
 
     @PostMapping("/login")
-    public ResponseEntity<?> createToken(@RequestBody AuthRequest request) {
+    public ResponseEntity<?> createToken(@Valid @RequestBody AuthRequest request) {
 
         // JUGADA DE DEBUGGING
-        System.out.println("🔥 EL HASH CORRECTO ES: " + new org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder().encode("12345"));
+        System.out.println("EL HASH CORRECTO ES: " + new org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder().encode("12345"));
         // ---------------------------
 
         try {

@@ -4,6 +4,7 @@ import com.minimarket.entity.Producto;
 import com.minimarket.service.ProductoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,11 +27,13 @@ public class ProductoController {
         return (producto != null) ? ResponseEntity.ok(producto) : ResponseEntity.notFound().build();
     }
 
+    @PreAuthorize("hasAuthority('GERENTE')")
     @PostMapping
     public Producto guardarProducto(@RequestBody Producto producto) {
         return productoService.save(producto);
     }
 
+    @PreAuthorize("hasAuthority('GERENTE')")
     @PutMapping("/{id}")
     public ResponseEntity<Producto> actualizarProducto(@PathVariable Long id, @RequestBody Producto producto) {
         Producto productoExistente = productoService.findById(id);
@@ -41,6 +44,7 @@ public class ProductoController {
         return ResponseEntity.notFound().build();
     }
 
+    @PreAuthorize("hasAuthority('GERENTE')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminarProducto(@PathVariable Long id) {
         Producto producto = productoService.findById(id);
