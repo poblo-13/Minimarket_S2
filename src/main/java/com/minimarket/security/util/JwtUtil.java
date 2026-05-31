@@ -32,7 +32,7 @@ public class JwtUtil {
                 .claim("roles", roles) // agregamos los roles al pase VIP
                 .issuedAt(new Date()) // fecha de creacion
                 .expiration(new Date(System.currentTimeMillis() + expirationTime)) // fecha de vencimiento
-                .signWith(secretKey) // lo firmamos con nuestra clave secreta para que no se pueda falsificar
+                .signWith(secretKey, Jwts.SIG.HS256) // firmamos explicitamente con HMAC-SHA256 (HS256)
                 .compact(); // lo convertimos en un String (token final)
     }
 
