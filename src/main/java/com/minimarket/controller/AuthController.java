@@ -8,7 +8,9 @@ import com.minimarket.entity.Usuario;
 import com.minimarket.repository.RolRepository;
 import com.minimarket.repository.UsuarioRepository;
 import com.minimarket.security.util.JwtUtil;
+import com.minimarket.security.audit.SecurityAuditLogger;
 import com.minimarket.security.service.CustomUserDetailsService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -43,6 +45,9 @@ public class AuthController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private SecurityAuditLogger auditLogger;
+
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody AuthRequest request) {
         // 1 evitamos registros duplicados
@@ -70,21 +75,21 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> createToken(@Valid @RequestBody AuthRequest request) {
-
-        // JUGADA DE DEBUGGING
-        System.out.println("EL HASH CORRECTO ES: " + new org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder().encode("12345"));
-        // ---------------------------
-
+    public ResponseEntity<?> createToken(@Valid @RequestBody AuthRequest request,
+                                         HttpServletRequest httpRequest) {
         try {
             // 1 el guardia verifica si el usuario y la clave coinciden con la BD
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
             );
         } catch (Exception e) {
-            // manejo de error limpio sin mostrar el Stack Trace
+            // monitoreo: registramos el intento fallido (sin la contrasena) para
+            // detectar fuerza bruta, y devolvemos un error limpio sin Stack Trace
+            auditLogger.loginFallido(request.getUsername(), httpRequest);
             return ResponseEntity.status(401).body("Error: Credenciales incorrectas o usuario no existe");
         }
+        // login correcto: reiniciamos el contador de fallos de esa IP
+        auditLogger.loginExitoso(httpRequest);
 
         // 2 Si pasa cargamos sus datos y sus roles
         UserDetails userDetails = userDetailsService.loadUserByUsername(request.getUsername());

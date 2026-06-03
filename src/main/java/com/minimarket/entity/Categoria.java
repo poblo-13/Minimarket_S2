@@ -1,6 +1,9 @@
 package com.minimarket.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import java.util.List;
 
 @Entity
@@ -9,6 +12,11 @@ public class Categoria {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // Validacion de entrada (defensa en profundidad frente a XSS almacenado):
+    // acotamos longitud y rechazamos los caracteres < y > usados en payloads HTML/script.
+    @NotBlank
+    @Size(max = 80)
+    @Pattern(regexp = "^[^<>]*$", message = "El nombre no puede contener los caracteres < o >")
     @Column(nullable = false, unique = true)
     private String nombre;
 

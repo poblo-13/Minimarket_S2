@@ -2,6 +2,7 @@ package com.minimarket.controller;
 
 import com.minimarket.entity.Categoria;
 import com.minimarket.service.CategoriaService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -16,11 +17,13 @@ public class CategoriaController {
     @Autowired
     private CategoriaService categoriaService;
 
+    @PreAuthorize("hasAnyAuthority('CLIENTE','EMPLEADO','GERENTE')")
     @GetMapping
     public List<Categoria> listarCategorias() {
         return categoriaService.findAll();
     }
 
+    @PreAuthorize("hasAnyAuthority('CLIENTE','EMPLEADO','GERENTE')")
     @GetMapping("/{id}")
     public ResponseEntity<Categoria> obtenerCategoriaPorId(@PathVariable Long id) {
         Categoria categoria = categoriaService.findById(id);
@@ -29,13 +32,13 @@ public class CategoriaController {
 
     @PreAuthorize("hasAuthority('GERENTE')")
     @PostMapping
-    public Categoria guardarCategoria(@RequestBody Categoria categoria) {
+    public Categoria guardarCategoria(@Valid @RequestBody Categoria categoria) {
         return categoriaService.save(categoria);
     }
 
     @PreAuthorize("hasAuthority('GERENTE')")
     @PutMapping("/{id}")
-    public ResponseEntity<Categoria> actualizarCategoria(@PathVariable Long id, @RequestBody Categoria categoria) {
+    public ResponseEntity<Categoria> actualizarCategoria(@PathVariable Long id, @Valid @RequestBody Categoria categoria) {
         Categoria categoriaExistente = categoriaService.findById(id);
         if (categoriaExistente != null) {
             categoria.setId(id);

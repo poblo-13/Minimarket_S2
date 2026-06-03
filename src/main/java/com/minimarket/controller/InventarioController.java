@@ -11,6 +11,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/inventario")
+@PreAuthorize("hasAnyAuthority('EMPLEADO','GERENTE')")
 public class InventarioController {
 
     @Autowired
@@ -27,13 +28,11 @@ public class InventarioController {
         return (inventario != null) ? ResponseEntity.ok(inventario) : ResponseEntity.notFound().build();
     }
 
-    @PreAuthorize("hasAuthority('GERENTE')")
     @PostMapping
     public Inventario registrarMovimiento(@RequestBody Inventario inventario) {
         return inventarioService.save(inventario);
     }
 
-    @PreAuthorize("hasAuthority('GERENTE')")
     @PutMapping("/{id}")
     public ResponseEntity<Inventario> actualizarMovimiento(@PathVariable Long id, @RequestBody Inventario inventario) {
         Inventario existente = inventarioService.findById(id);
@@ -44,7 +43,6 @@ public class InventarioController {
         return ResponseEntity.notFound().build();
     }
 
-    @PreAuthorize("hasAuthority('GERENTE')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminarMovimiento(@PathVariable Long id) {
         Inventario inventario = inventarioService.findById(id);

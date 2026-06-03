@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.Set;
 
@@ -21,7 +22,13 @@ public class JwtUtil {
 
     public JwtUtil(@Value("${jwt.secret}") String secret,
                    @Value("${jwt.expiration}") long expirationTime) {
-        this.secretKey = Keys.hmacShaKeyFor(secret.getBytes());
+        // HS256 exige una clave de al menos 256 bits (32 bytes). Validamos al
+        // arrancar para que un secreto debil rompa el arranque en vez de degradar
+        // la seguridad en silencio.
+        if (secret == null || secret.getBytes(StandardCharsets.UTF_8).length < 32) {
+            throw new IllegalStateException("jwt.secret debe tener al menos 32 bytes (256 bits) para HS256");
+        }
+        this.secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
         this.expirationTime = expirationTime;
     }
 

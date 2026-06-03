@@ -2,6 +2,7 @@ package com.minimarket.controller;
 
 import com.minimarket.entity.Producto;
 import com.minimarket.service.ProductoService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -16,11 +17,13 @@ public class ProductoController {
     @Autowired
     private ProductoService productoService;
 
+    @PreAuthorize("hasAnyAuthority('CLIENTE','EMPLEADO','GERENTE')")
     @GetMapping
     public List<Producto> listarProductos() {
         return productoService.findAll();
     }
 
+    @PreAuthorize("hasAnyAuthority('CLIENTE','EMPLEADO','GERENTE')")
     @GetMapping("/{id}")
     public ResponseEntity<Producto> obtenerProductoPorId(@PathVariable Long id) {
         Producto producto = productoService.findById(id);
@@ -29,13 +32,13 @@ public class ProductoController {
 
     @PreAuthorize("hasAuthority('GERENTE')")
     @PostMapping
-    public Producto guardarProducto(@RequestBody Producto producto) {
+    public Producto guardarProducto(@Valid @RequestBody Producto producto) {
         return productoService.save(producto);
     }
 
     @PreAuthorize("hasAuthority('GERENTE')")
     @PutMapping("/{id}")
-    public ResponseEntity<Producto> actualizarProducto(@PathVariable Long id, @RequestBody Producto producto) {
+    public ResponseEntity<Producto> actualizarProducto(@PathVariable Long id, @Valid @RequestBody Producto producto) {
         Producto productoExistente = productoService.findById(id);
         if (productoExistente != null) {
             producto.setId(id);

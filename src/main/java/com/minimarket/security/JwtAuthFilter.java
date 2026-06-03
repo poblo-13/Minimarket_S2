@@ -1,6 +1,7 @@
 package com.minimarket.security;
 
 import com.minimarket.security.util.JwtUtil;
+import com.minimarket.security.audit.SecurityAuditLogger;
 import com.minimarket.security.service.CustomUserDetailsService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -25,6 +26,9 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     @Autowired
     private CustomUserDetailsService customUserDetailsService;
 
+    @Autowired
+    private SecurityAuditLogger auditLogger;
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
@@ -38,7 +42,10 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             try {
                 username = jwtUtil.extractUsername(jwtToken);
             } catch (Exception e) {
-                System.out.println("Token inválido o expirado: " + e.getMessage());
+                // token manipulado o expirado: lo registramos en el monitoreo de
+                // seguridad (sin volcar el token) y dejamos pasar sin autenticar,
+                // de modo que el endpoint protegido responda 401 via el EntryPoint
+                auditLogger.tokenInvalido(e.getClass().getSimpleName(), request);
             }
         }
 
