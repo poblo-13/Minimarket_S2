@@ -8,10 +8,8 @@ Repositorio: <https://github.com/poblo-13/Minimarket_S2>
 
 ## Integrantes
 
-> Completar antes de la entrega (modalidad grupal 2–3 integrantes):
-> - Nombre Apellido — usuario GitHub
-> - Nombre Apellido — usuario GitHub
-> - Nombre Apellido — usuario GitHub
+- Pablo Pilar — pablo-13
+- Diego Alvarez — dalvae
 
 ## Stack
 

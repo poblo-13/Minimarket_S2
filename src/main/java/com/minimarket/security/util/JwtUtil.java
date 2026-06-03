@@ -1,8 +1,14 @@
 package com.minimarket.security.util;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -14,17 +20,18 @@ import java.util.Set;
 @Component
 public class JwtUtil {
 
-    // 1 la clave secreta ahora viene del .env, ya no quemada en el codigo
+    // Logger agregado para registrar errores sin usar System.out.println
+    private static final Logger logger = LoggerFactory.getLogger(JwtUtil.class);
+
+    // La clave secreta ahora viene del .env ya no quemada en el codigo
     private final SecretKey secretKey;
 
-    // 2 tiempo de validez del Token (en milisegundos), tambien desde el .env
+    // Tiempo de validez del Token tambien desde el .env
     private final long expirationTime;
 
     public JwtUtil(@Value("${jwt.secret}") String secret,
                    @Value("${jwt.expiration}") long expirationTime) {
-        // HS256 exige una clave de al menos 256 bits (32 bytes). Validamos al
-        // arrancar para que un secreto debil rompa el arranque en vez de degradar
-        // la seguridad en silencio.
+        // HS256 exige una clave de al menos 256 bits (32 bytes).
         if (secret == null || secret.getBytes(StandardCharsets.UTF_8).length < 32) {
             throw new IllegalStateException("jwt.secret debe tener al menos 32 bytes (256 bits) para HS256");
         }
@@ -35,12 +42,12 @@ public class JwtUtil {
     // metodo para fabricar el token
     public String generateToken(String username, Set<String> roles) {
         return Jwts.builder()
-                .subject(username) // a quien le pertenece el token
-                .claim("roles", roles) // agregamos los roles al pase VIP
-                .issuedAt(new Date()) // fecha de creacion
-                .expiration(new Date(System.currentTimeMillis() + expirationTime)) // fecha de vencimiento
-                .signWith(secretKey, Jwts.SIG.HS256) // firmamos explicitamente con HMAC-SHA256 (HS256)
-                .compact(); // lo convertimos en un String (token final)
+                .subject(username)
+                .claim("roles", roles)
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + expirationTime))
+                .signWith(secretKey, Jwts.SIG.HS256)
+                .compact();
     }
 
     // metodo para LEER a quien le pertenece un token
@@ -51,19 +58,28 @@ public class JwtUtil {
     // metodo interno para ABRIR y DESCIFRAR el token
     public Claims getClaims(String token) {
         return Jwts.parser()
-                .verifyWith(secretKey) // verificamos que la firma coincida
+                .verifyWith(secretKey)
                 .build()
                 .parseSignedClaims(token)
-                .getPayload(); // sacamos los datos
+                .getPayload();
     }
 
-    // metodo para VALIDAR si el token es legitimo y no ha vencido
+    // METODO ACTUALIZADO excepciones especificas y Logger estructurado
     public boolean isTokenValid(String token) {
         try {
             getClaims(token); // si logra abrirlo sin lanzar error, es valido
             return true;
-        } catch (Exception e) {
-            return false; // si esta manipulado o vencido, devuelve falso
+        } catch (SignatureException e) {
+            logger.error("Firma del token JWT inválida: {}", e.getMessage());
+        } catch (MalformedJwtException e) {
+            logger.error("Token JWT mal formado: {}", e.getMessage());
+        } catch (ExpiredJwtException e) {
+            logger.error("El token JWT ha expirado: {}", e.getMessage());
+        } catch (UnsupportedJwtException e) {
+            logger.error("Token JWT no soportado: {}", e.getMessage());
+        } catch (IllegalArgumentException e) {
+            logger.error("El token JWT está vacío o es nulo: {}", e.getMessage());
         }
+        return false;
     }
 }
