@@ -1,5 +1,6 @@
 package com.minimarket.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.util.Set;
 
@@ -12,6 +13,9 @@ public class Rol {
     @Column(nullable = false, unique = true)
     private String nombre;
 
+    // Lado inverso: se ignora en la serializacion para romper el ciclo
+    // Usuario <-> Rol y para no exponer la lista completa de usuarios por rol.
+    @JsonIgnore
     @ManyToMany(mappedBy = "roles")
     private Set<Usuario> usuarios;
 

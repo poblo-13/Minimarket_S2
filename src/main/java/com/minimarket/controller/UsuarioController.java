@@ -5,6 +5,7 @@ import com.minimarket.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,6 +18,9 @@ public class UsuarioController {
 
     @Autowired
     private UsuarioService usuarioService;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @GetMapping
     public List<Usuario> listarUsuarios() {
@@ -32,6 +36,8 @@ public class UsuarioController {
 
     @PostMapping
     public Usuario guardarUsuario(@RequestBody Usuario usuario) {
+        // la clave SIEMPRE se almacena hasheada con BCrypt, nunca en texto plano
+        usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
         return usuarioService.save(usuario);
     }
 
@@ -40,6 +46,12 @@ public class UsuarioController {
         Optional<Usuario> usuarioExistente = usuarioService.findById(id);
         if (usuarioExistente.isPresent()) {
             usuario.setId(id);
+            // si llega una clave nueva se rehashea; si viene vacia se conserva la actual
+            if (usuario.getPassword() != null && !usuario.getPassword().isBlank()) {
+                usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
+            } else {
+                usuario.setPassword(usuarioExistente.get().getPassword());
+            }
             return ResponseEntity.ok(usuarioService.save(usuario));
         }
         return ResponseEntity.notFound().build();

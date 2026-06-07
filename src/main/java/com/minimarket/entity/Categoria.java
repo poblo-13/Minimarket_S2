@@ -1,5 +1,6 @@
 package com.minimarket.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -20,6 +21,9 @@ public class Categoria {
     @Column(nullable = false, unique = true)
     private String nombre;
 
+    // Lado inverso: se ignora en la serializacion para romper el ciclo
+    // Categoria <-> Producto (un Producto SI muestra su categoria, no al reves).
+    @JsonIgnore
     @OneToMany(mappedBy = "categoria", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Producto> productos;
 

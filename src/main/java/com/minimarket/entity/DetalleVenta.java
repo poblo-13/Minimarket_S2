@@ -1,5 +1,6 @@
 package com.minimarket.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 @Entity
@@ -8,6 +9,9 @@ public class DetalleVenta {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // Lado inverso: se ignora para romper el ciclo Venta <-> DetalleVenta
+    // (una Venta SI muestra sus detalles, el detalle no vuelve a la venta).
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "venta_id", nullable = false)
     private Venta venta;

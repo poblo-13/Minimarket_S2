@@ -1,5 +1,6 @@
 package com.minimarket.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import java.util.Set;
 
@@ -12,6 +13,10 @@ public class Usuario {
     @Column(nullable = false, unique = true)
     private String username;
 
+    // El hash BCrypt NUNCA se serializa hacia el cliente (evita fuga de
+    // credenciales al exponer la entidad p.ej. via Venta/Carrito -> usuario),
+    // pero SI se acepta al deserializar para poder crear/actualizar usuarios.
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(nullable = false)
     private String password;
 
