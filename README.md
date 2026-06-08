@@ -4,7 +4,7 @@ API REST para la gestión de un minimarket (productos, categorías, inventario,
 carrito, ventas y usuarios) con **autenticación JWT** y **autorización por roles**
 sobre **Spring Security**. Sumativa S3 — Desarrollo Backend II (PBY2202).
 
-Repositorio: <https://github.com/poblo-13/Minimarket_S2>
+Repositorio: <https://github.com/poblo-13/Minimarket_S3>
 
 ## Integrantes
 
@@ -106,6 +106,7 @@ curl localhost:8080/api/usuarios -H "Authorization: Bearer <jwt>"
   accesos 403 a nivel WARN, con contador por IP para detectar fuerza bruta.
 - **Consola H2 deshabilitada** por defecto (solo bajo el perfil `dev`).
 
+Informe técnico completo: [`docs/INFORME_S3.md`](docs/INFORME_S3.md).
 Detalle de amenazas: [`docs/analisis-amenazas.md`](docs/analisis-amenazas.md).
 Pruebas de seguridad: [`docs/pruebas-seguridad.md`](docs/pruebas-seguridad.md).
 

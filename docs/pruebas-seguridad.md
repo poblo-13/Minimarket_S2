@@ -4,8 +4,8 @@
 
 Pruebas que demuestran la protección frente a amenazas comunes. Las pruebas
 **T1–T7** son manuales (curl) y se complementan con la batería **automatizada**
-`SecurityRulesTest` (18 tests verdes, ver al final), que es evidencia ejecutada de
-la matriz rol×endpoint.
+`SecurityRulesTest` (17 tests verdes; 21 en total con el resto de la suite, ver al
+final), que es evidencia ejecutada de la matriz rol×endpoint.
 
 Prerrequisito para las pruebas manuales: levantar la app en Docker JDK17 y obtener
 tokens por rol.
@@ -59,7 +59,9 @@ con `@WithMockUser(authorities=...)` y MockMvc. Resultado real en Docker JDK17:
 
 ```
 [INFO] Tests run: 17, Failures: 0, Errors: 0, Skipped: 0 -- in com.minimarket.security.SecurityRulesTest
-[INFO] Tests run: 18, Failures: 0, Errors: 0, Skipped: 0
+[INFO] Tests run:  3, Failures: 0, Errors: 0, Skipped: 0 -- in com.minimarket.SerializacionJsonTest
+[INFO] Tests run:  1, Failures: 0, Errors: 0, Skipped: 0 -- in com.minimarket.MinimarketApplicationTests
+[INFO] Tests run: 21, Failures: 0, Errors: 0, Skipped: 0
 [INFO] BUILD SUCCESS
 ```
 

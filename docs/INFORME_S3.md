@@ -11,7 +11,7 @@
 > provisto por el curso (mismo paquete `com.minimarket` y mismo dominio de 8
 > entidades) y se le integró/portó la capa de seguridad madura desarrollada por el
 > equipo, endureciéndola para esta entrega. El proyecto entregado es
-> `Minimarket_S2` (<https://github.com/poblo-13/Minimarket_S2>).
+> `Minimarket_S3` (<https://github.com/poblo-13/Minimarket_S3>).
 
 ---
 
@@ -204,8 +204,10 @@ Batería automatizada `SecurityRulesTest` (`@WithMockUser` + MockMvc) que verifi
 la matriz completa. Resultado real en Docker JDK17:
 
 ```
-[INFO] Tests run: 17, Failures: 0, Errors: 0, Skipped: 0 -- in SecurityRulesTest
-[INFO] Tests run: 18, Failures: 0, Errors: 0, Skipped: 0
+[INFO] Tests run: 17, Failures: 0, Errors: 0, Skipped: 0 -- in com.minimarket.security.SecurityRulesTest
+[INFO] Tests run:  3, Failures: 0, Errors: 0, Skipped: 0 -- in com.minimarket.SerializacionJsonTest
+[INFO] Tests run:  1, Failures: 0, Errors: 0, Skipped: 0 -- in com.minimarket.MinimarketApplicationTests
+[INFO] Tests run: 21, Failures: 0, Errors: 0, Skipped: 0
 [INFO] BUILD SUCCESS
 ```
 
@@ -274,6 +276,6 @@ y su reforma 21.719.
 
 ## Repositorio GitHub
 
-<https://github.com/poblo-13/Minimarket_S2> — incluye `README.md` técnico,
+<https://github.com/poblo-13/Minimarket_S3> — incluye `README.md` técnico,
 `.gitignore` (excluye `.env` y `target/`), `.env.example`, el código de seguridad y
 los documentos `docs/analisis-amenazas.md` y `docs/pruebas-seguridad.md`.
